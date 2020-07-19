@@ -14,6 +14,8 @@ namespace AutoMapperNUnitTest
         {
             MapperConfiguration configuration = new MapperConfiguration(cfg =>
             {
+                cfg.AllowNullCollections = true;
+
                 cfg.ClearPrefixes();
                 // Recognize Prefixes
                 cfg.RecognizePrefixes("frm");
@@ -137,6 +139,7 @@ namespace AutoMapperNUnitTest
             {
                 new Foo{  Name = "BCA", Description = "ABCD123"},
                 new Foo{  Name = "123", Description = "9999999"},
+                new Foo{  Name = null, Description = "9999999"},
             };
             var fooDto = mapper.Map<List<Foo>, List<FooDto>>(testfoo);
 
