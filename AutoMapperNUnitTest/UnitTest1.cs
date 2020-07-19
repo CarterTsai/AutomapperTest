@@ -2,6 +2,7 @@
 using AutoMapper;
 using Model;
 using System;
+using System.Collections.Generic;
 
 namespace AutoMapperNUnitTest
 {
@@ -127,6 +128,22 @@ namespace AutoMapperNUnitTest
             Assert.AreEqual(dest.Value, 5);
             Assert.IsNotNull(dest.Inner);
             Assert.AreEqual(dest.Inner.OtherValue, 15);
+        }
+
+        [Test]
+        public void ModelMapperListOrArray()
+        {
+            var testfoo = new List<Foo>
+            {
+                new Foo{  Name = "BCA", Description = "ABCD123"},
+                new Foo{  Name = "123", Description = "9999999"},
+            };
+            var fooDto = mapper.Map<List<Foo>, List<FooDto>>(testfoo);
+
+            Assert.AreEqual(testfoo[0].Name, fooDto[0].Name);
+            Assert.AreEqual(testfoo[0].Description, fooDto[0].Description);
+            Assert.AreEqual(testfoo[1].Name, fooDto[1].Name);
+            Assert.AreEqual(testfoo[1].Description, fooDto[1].Description);
         }
     }
 }
