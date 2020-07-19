@@ -1,8 +1,9 @@
 ﻿using NUnit.Framework;
 using AutoMapper;
 using Model;
+using System;
 
-namespace NUnitTestProject1
+namespace AutoMapperNUnitTest
 {
     public partial class Tests
     {
@@ -25,6 +26,12 @@ namespace NUnitTestProject1
                 cfg.SourceMemberNamingConvention = new LowerUnderscoreNamingConvention();
                 cfg.DestinationMemberNamingConvention = new PascalCaseNamingConvention();
                 cfg.CreateMap<SourceNameConventions, DestNameConventions>();
+                // Projection Transform
+                cfg.CreateMap<CalendarEvent, CalendarEventForm>()
+                    .ForMember(dest => dest.EventDate, opt => opt.MapFrom(src => src.Date.Date))
+                    .ForMember(dest => dest.EventHour, opt => opt.MapFrom(src => src.Date.Hour))
+                    .ForMember(dest => dest.EventMinute, opt => opt.MapFrom(src => src.Date.Minute));
+
             });
 
             configuration.AssertConfigurationIsValid();
@@ -85,6 +92,23 @@ namespace NUnitTestProject1
 
             Assert.AreEqual(dest.ProductId, source.product_id);
             Assert.AreEqual(dest.ProductName, source.product_name);
+        }
+
+        [Test]
+        public void ModelMapperProjectionTransform()
+        {
+            var source = new CalendarEvent
+            {
+                Date = new DateTime(2008, 12, 15, 20, 30, 0),
+                Title = "Company Holiday Party"
+            };
+            
+            CalendarEventForm form = mapper.Map<CalendarEvent, CalendarEventForm>(source);
+
+            Assert.AreEqual(form.EventHour, 20);
+            Assert.AreEqual(form.EventMinute, 30);
+            Assert.AreEqual(form.Title, "Company Holiday Party");
+            Assert.AreEqual(form.EventDate, new DateTime(2008, 12, 15));
         }
     }
 }
