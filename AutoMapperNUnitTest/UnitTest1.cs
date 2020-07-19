@@ -31,7 +31,9 @@ namespace AutoMapperNUnitTest
                     .ForMember(dest => dest.EventDate, opt => opt.MapFrom(src => src.Date.Date))
                     .ForMember(dest => dest.EventHour, opt => opt.MapFrom(src => src.Date.Hour))
                     .ForMember(dest => dest.EventMinute, opt => opt.MapFrom(src => src.Date.Minute));
-
+                // Nested Mappings
+                cfg.CreateMap<OuterSource, OuterDest>();
+                cfg.CreateMap<InnerSource, InnerDest>();
             });
 
             configuration.AssertConfigurationIsValid();
@@ -109,6 +111,22 @@ namespace AutoMapperNUnitTest
             Assert.AreEqual(form.EventMinute, 30);
             Assert.AreEqual(form.Title, "Company Holiday Party");
             Assert.AreEqual(form.EventDate, new DateTime(2008, 12, 15));
+        }
+
+        [Test]
+        public void ModelMapperNested()
+        {
+            var source = new OuterSource
+            {
+                Value = 5,
+                Inner = new InnerSource { OtherValue = 15 }
+            };
+
+            var dest = mapper.Map<OuterSource, OuterDest>(source);
+
+            Assert.AreEqual(dest.Value, 5);
+            Assert.IsNotNull(dest.Inner);
+            Assert.AreEqual(dest.Inner.OtherValue, 15);
         }
     }
 }
